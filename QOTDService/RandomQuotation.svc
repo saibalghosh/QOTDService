@@ -1,0 +1,1 @@
+﻿<%@ ServiceHost Language="C#" Debug="true" Service="QOTDService.Service1" CodeBehind="RandomQuotation.svc.cs" %>
