@@ -5,29 +5,52 @@ using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.ServiceModel.Web;
 using System.Text;
+using QOTDService.Helpers;
+using System.Data;
+using System.Net;
 
 namespace QOTDService
 {
-    // NOTE: You can use the "Rename" command on the "Refactor" menu to change the class name "Service1" in code, svc and config file together.
-    // NOTE: In order to launch WCF Test Client for testing this service, please select Service1.svc or Service1.svc.cs at the Solution Explorer and start debugging.
     public class RandomQuotation : IRandomQuotation
     {
-        public string GetData(int value)
+        DataTable dtQuotations;
+        string[,] listOfQuotations;
+
+        string[][] IRandomQuotation.GetRandomQuotation()
         {
-            return string.Format("You entered: {0}", value);
+            return ArrayConverter.ToJaggedArray<string>(RetrieveRandomQuotation());
         }
 
-        public CompositeType GetDataUsingDataContract(CompositeType composite)
+        private string[,] RetrieveRandomQuotation()
         {
-            if (composite == null)
+            try
             {
-                throw new ArgumentNullException("composite");
+                DatabaseManager dbManager = new DatabaseManager();
+                dtQuotations = dbManager.ExecuteSelectQueryByProcedureName("GetRandomQuotation", null);
+
+                if (dtQuotations != null)
+                {
+                    listOfQuotations = new string[dtQuotations.Rows.Count, 3];
+
+                    for (int i = 0; i < dtQuotations.Rows.Count; i++)
+                    {
+                        listOfQuotations[i, 0] = (String)(dtQuotations.Rows[i]).ItemArray[0];
+                        listOfQuotations[i, 1] = (String)(dtQuotations.Rows[i]).ItemArray[1];
+                        listOfQuotations[i, 2] = (String)(dtQuotations.Rows[i]).ItemArray[2];
+                    }
+                }
+
+                else
+                {
+                    throw new Exception("Error retrieving data from the database.");
+                }
             }
-            if (composite.BoolValue)
+            catch (WebException ex)
             {
-                composite.StringValue += "Suffix";
+                throw ex;
             }
-            return composite;
+
+            return listOfQuotations;
         }
     }
 }

@@ -62,9 +62,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="RandomQuotation.svc" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\ArrayConverter.cs" />
+    <Compile Include="Helpers\DatabaseManager.cs" />
     <Compile Include="RandomQuotation.svc.cs">
       <DependentUpon>RandomQuotation.svc</DependentUpon>
     </Compile>
